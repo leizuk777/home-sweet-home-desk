@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import ClientDetail from "./pages/ClientDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { ClientsProvider } from "@/context/ClientsContext";
+import { PropertiesProvider } from "@/context/PropertiesContext";
 import { AddClientDialog } from "@/components/dashboard/AddClientDialog";
 
 const queryClient = new QueryClient();
