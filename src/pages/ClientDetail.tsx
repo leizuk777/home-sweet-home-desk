@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
+import { PropertyListings } from "@/components/dashboard/PropertyListings";
 import { useClients } from "@/context/ClientsContext";
 import { stages, activity, type ClientType } from "@/data/clients";
 import { cn } from "@/lib/utils";
@@ -222,6 +223,8 @@ const ClientDetail = () => {
                   />
                 </div>
               </div>
+
+              <PropertyListings clientId={client.id} defaultCity={client.location} />
 
               <div className="rounded-xl border border-border bg-card shadow-card p-6">
                 <div className="flex items-center gap-2 mb-3">
