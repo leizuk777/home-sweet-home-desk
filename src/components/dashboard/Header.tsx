@@ -1,7 +1,9 @@
 import { Search, Bell, Plus, Command } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useClients } from "@/context/ClientsContext";
 
 export const Header = () => {
+  const { setAddOpen } = useClients();
   return (
     <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/70 border-b border-border">
       <div className="flex items-center gap-4 px-6 lg:px-10 h-16">
@@ -29,7 +31,10 @@ export const Header = () => {
             <Bell className="h-4 w-4 text-muted-foreground" />
             <span className="absolute top-2.5 right-2.5 h-1.5 w-1.5 rounded-full bg-gold" />
           </button>
-          <Button className="bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-glow font-medium">
+          <Button
+            onClick={() => setAddOpen(true)}
+            className="bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-glow font-medium"
+          >
             <Plus className="h-4 w-4 mr-1" /> New Client
           </Button>
         </div>

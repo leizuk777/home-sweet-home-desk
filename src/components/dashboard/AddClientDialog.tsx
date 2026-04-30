@@ -21,7 +21,7 @@ const schema = z.object({
   budget: z.coerce.number().nonnegative("Budget must be positive").max(1_000_000_000),
   location: z.string().trim().min(2, "Location is required").max(120),
   property: z.string().trim().min(2, "Property is required").max(160),
-  notes: z.string().trim().max(500).optional().or(z.literal("")),
+  notes: z.string().trim().max(500).default(""),
   rating: z.number().int().min(1).max(5),
 });
 
@@ -62,7 +62,7 @@ export const AddClientDialog = () => {
       return;
     }
     setErrors({});
-    addClient({ ...result.data, notes: result.data.notes || "" });
+    addClient(result.data);
     toast({ title: "Client added", description: `${result.data.name} is now in your pipeline.` });
     setValues(empty);
     setAddOpen(false);
