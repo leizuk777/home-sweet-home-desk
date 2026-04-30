@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Phone, Mail, MoreHorizontal, Star, Filter } from "lucide-react";
-import { clients, stages, type ClientType } from "@/data/clients";
+import { stages, type ClientType } from "@/data/clients";
+import { useClients } from "@/context/ClientsContext";
 import { cn } from "@/lib/utils";
 
 const typeStyles: Record<ClientType, string> = {
@@ -14,6 +15,7 @@ const filters = ["All", "Buyer", "Seller", "Investor", "Renter"];
 
 export const ClientsTable = () => {
   const [active, setActive] = useState("All");
+  const { clients } = useClients();
   const filtered = active === "All" ? clients : clients.filter((c) => c.type === active.toLowerCase());
 
   return (

@@ -1,7 +1,9 @@
-import { stages, clients } from "@/data/clients";
+import { stages } from "@/data/clients";
+import { useClients } from "@/context/ClientsContext";
 import { cn } from "@/lib/utils";
 
 export const Pipeline = () => {
+  const { clients } = useClients();
   return (
     <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
       <div className="flex items-center justify-between px-6 py-5 border-b border-border">
