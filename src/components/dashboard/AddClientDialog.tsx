@@ -25,7 +25,18 @@ const schema = z.object({
   rating: z.number().int().min(1).max(5),
 });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = {
+  name: string;
+  email: string;
+  phone: string;
+  type: ClientType;
+  stage: ClientStage;
+  budget: number;
+  location: string;
+  property: string;
+  notes: string;
+  rating: number;
+};
 
 const empty: FormValues = {
   name: "",
