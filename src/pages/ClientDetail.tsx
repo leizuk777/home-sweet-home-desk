@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
+import { PropertyListings } from "@/components/dashboard/PropertyListings";
 import { useClients } from "@/context/ClientsContext";
 import { stages, activity, type ClientType } from "@/data/clients";
 import { cn } from "@/lib/utils";
