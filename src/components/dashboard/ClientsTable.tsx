@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Phone, Mail, MoreHorizontal, Star, Filter } from "lucide-react";
 import { stages, type ClientType } from "@/data/clients";
 import { useClients } from "@/context/ClientsContext";
@@ -16,6 +17,7 @@ const filters = ["All", "Buyer", "Seller", "Investor", "Renter"];
 export const ClientsTable = () => {
   const [active, setActive] = useState("All");
   const { clients } = useClients();
+  const navigate = useNavigate();
   const filtered = active === "All" ? clients : clients.filter((c) => c.type === active.toLowerCase());
 
   return (
@@ -67,7 +69,8 @@ export const ClientsTable = () => {
               return (
                 <tr
                   key={c.id}
-                  className="border-b border-border/50 last:border-0 hover:bg-secondary/30 transition-colors group"
+                  onClick={() => navigate(`/clients/${c.id}`)}
+                  className="border-b border-border/50 last:border-0 hover:bg-secondary/30 transition-colors group cursor-pointer"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -113,14 +116,14 @@ export const ClientsTable = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4 text-xs text-muted-foreground">{c.lastContact}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="h-7 w-7 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-gold transition-colors">
+                      <a href={`tel:${c.phone}`} className="h-7 w-7 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-gold transition-colors">
                         <Phone className="h-3.5 w-3.5" />
-                      </button>
-                      <button className="h-7 w-7 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-gold transition-colors">
+                      </a>
+                      <a href={`mailto:${c.email}`} className="h-7 w-7 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-gold transition-colors">
                         <Mail className="h-3.5 w-3.5" />
-                      </button>
+                      </a>
                       <button className="h-7 w-7 rounded-md hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-gold transition-colors">
                         <MoreHorizontal className="h-3.5 w-3.5" />
                       </button>
