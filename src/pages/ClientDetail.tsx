@@ -224,6 +224,8 @@ const ClientDetail = () => {
                 </div>
               </div>
 
+              <PropertyListings clientId={client.id} defaultCity={client.location} />
+
               <div className="rounded-xl border border-border bg-card shadow-card p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <StickyNote className="h-4 w-4 text-gold" />
