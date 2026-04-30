@@ -62,8 +62,7 @@ export const AddClientDialog = () => {
       return;
     }
     setErrors({});
-    const data = result.data as FormValues;
-    addClient({ ...data, notes: data.notes ?? "" });
+    addClient({ ...values, notes: values.notes ?? "" });
     toast({ title: "Client added", description: `${result.data.name} is now in your pipeline.` });
     setValues(empty);
     setAddOpen(false);
