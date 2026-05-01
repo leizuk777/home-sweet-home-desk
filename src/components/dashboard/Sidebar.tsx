@@ -11,7 +11,7 @@ export const Sidebar = () => {
 
   const nav = [
     { icon: LayoutDashboard, label: "Overview", to: "/" },
-    { icon: Users, label: "Clients", to: "/", badge: String(clients.length) },
+    { icon: Users, label: "Clients", to: "/clients", badge: String(clients.length) },
     { icon: Home, label: "Listings", to: "/listings", badge: String(properties.length) },
     { icon: Calendar, label: "Viewings", to: "#" },
     { icon: MessageSquare, label: "Messages", to: "#", badge: "5" },
