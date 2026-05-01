@@ -284,6 +284,7 @@ const ClientDetail = () => {
           </div>
         </main>
       </div>
+      <EditClientDialog client={client} open={isEditOpen} onOpenChange={setEditOpen} />
     </div>
   );
 };
