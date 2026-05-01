@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { EditClientDialog } from "@/components/dashboard/EditClientDialog";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -46,6 +47,7 @@ const ClientDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { clients } = useClients();
+  const [isEditOpen, setEditOpen] = useState(false);
 
   const client = useMemo(() => clients.find((c) => c.id === id), [clients, id]);
   const clientActivity = useMemo(
@@ -143,7 +145,10 @@ const ClientDetail = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs uppercase tracking-wider text-muted-foreground hover:text-gold hover:border-gold/40 transition-colors">
+                <button
+                  onClick={() => setEditOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs uppercase tracking-wider text-muted-foreground hover:text-gold hover:border-gold/40 transition-colors"
+                >
                   <Pencil className="h-3.5 w-3.5" /> Edit
                 </button>
                 <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-gold text-primary-foreground text-xs uppercase tracking-wider font-medium shadow-elegant">
