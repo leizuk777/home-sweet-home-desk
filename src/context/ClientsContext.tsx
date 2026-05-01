@@ -5,6 +5,7 @@ interface ClientsContextValue {
   clients: Client[];
   addClient: (c: Omit<Client, "id" | "avatar" | "lastContact"> & { avatar?: string }) => Client;
   updateClientStage: (id: string, stage: ClientStage) => void;
+  updateClient: (id: string, patch: Partial<Omit<Client, "id">>) => void;
   isAddOpen: boolean;
   setAddOpen: (open: boolean) => void;
 }
@@ -41,9 +42,20 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
+  const updateClient = useCallback<ClientsContextValue["updateClient"]>((id, patch) => {
+    setClients((prev) =>
+      prev.map((c) => {
+        if (c.id !== id) return c;
+        const next = { ...c, ...patch, lastContact: "Just now" };
+        if (patch.name && !patch.avatar) next.avatar = initials(patch.name);
+        return next;
+      })
+    );
+  }, []);
+
   const value = useMemo(
-    () => ({ clients, addClient, updateClientStage, isAddOpen, setAddOpen }),
-    [clients, addClient, updateClientStage, isAddOpen]
+    () => ({ clients, addClient, updateClientStage, updateClient, isAddOpen, setAddOpen }),
+    [clients, addClient, updateClientStage, updateClient, isAddOpen]
   );
 
   return <ClientsContext.Provider value={value}>{children}</ClientsContext.Provider>;
