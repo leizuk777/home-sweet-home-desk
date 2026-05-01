@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from "react";
-import { clients as seedClients, type Client } from "@/data/clients";
+import { clients as seedClients, type Client, type ClientStage } from "@/data/clients";
 
 interface ClientsContextValue {
   clients: Client[];
   addClient: (c: Omit<Client, "id" | "avatar" | "lastContact"> & { avatar?: string }) => Client;
+  updateClientStage: (id: string, stage: ClientStage) => void;
   isAddOpen: boolean;
   setAddOpen: (open: boolean) => void;
 }
@@ -34,9 +35,15 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
     return newClient;
   }, []);
 
+  const updateClientStage = useCallback((id: string, stage: ClientStage) => {
+    setClients((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, stage, lastContact: "Just now" } : c))
+    );
+  }, []);
+
   const value = useMemo(
-    () => ({ clients, addClient, isAddOpen, setAddOpen }),
-    [clients, addClient, isAddOpen]
+    () => ({ clients, addClient, updateClientStage, isAddOpen, setAddOpen }),
+    [clients, addClient, updateClientStage, isAddOpen]
   );
 
   return <ClientsContext.Provider value={value}>{children}</ClientsContext.Provider>;
