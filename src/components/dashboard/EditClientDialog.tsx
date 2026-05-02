@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useClients } from "@/context/ClientsContext";
+import { useActivity } from "@/context/ActivityContext";
 import { useToast } from "@/hooks/use-toast";
 import type { Client, ClientStage, ClientType } from "@/data/clients";
 import { Star } from "lucide-react";
@@ -72,6 +73,7 @@ interface Props {
 
 export const EditClientDialog = ({ client, open, onOpenChange }: Props) => {
   const { updateClient } = useClients();
+  const { logActivity } = useActivity();
   const { toast } = useToast();
   const [values, setValues] = useState<FormValues>(() => fromClient(client));
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
@@ -99,7 +101,23 @@ export const EditClientDialog = ({ client, open, onOpenChange }: Props) => {
       return;
     }
     setErrors({});
-    updateClient(client.id, { ...result.data, notes: result.data.notes ?? "" });
+    const data = { ...result.data, notes: result.data.notes ?? "" };
+    const changed: string[] = [];
+    (Object.keys(data) as Array<keyof typeof data>).forEach((k) => {
+      if ((client as any)[k] !== (data as any)[k]) changed.push(String(k));
+    });
+    updateClient(client.id, data);
+    if (changed.length) {
+      const stageChanged = changed.includes("stage");
+      logActivity({
+        who: data.name,
+        what: stageChanged
+          ? `details updated · stage → ${data.stage}`
+          : `details updated (${changed.slice(0, 3).join(", ")}${changed.length > 3 ? "…" : ""})`,
+        type: stageChanged ? "negotiation" : "edit",
+        clientId: client.id,
+      });
+    }
     toast({
       title: "Client updated",
       description: `${result.data.name}'s details were saved.`,

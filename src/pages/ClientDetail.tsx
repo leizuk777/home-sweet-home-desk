@@ -21,7 +21,8 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { PropertyListings } from "@/components/dashboard/PropertyListings";
 import { useClients } from "@/context/ClientsContext";
-import { stages, activity, type ClientType } from "@/data/clients";
+import { useActivity } from "@/context/ActivityContext";
+import { stages, type ClientType } from "@/data/clients";
 import { cn } from "@/lib/utils";
 
 const typeStyles: Record<ClientType, string> = {
@@ -36,7 +37,10 @@ const iconMap = {
   closing: FileSignature,
   viewing: Calendar,
   closed: CheckCircle2,
-};
+  lead: Calendar,
+  edit: Pencil,
+  note: StickyNote,
+} as const;
 
 const formatBudget = (n: number) =>
   n >= 1_000_000
@@ -47,12 +51,13 @@ const ClientDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { clients } = useClients();
+  const { events } = useActivity();
   const [isEditOpen, setEditOpen] = useState(false);
 
   const client = useMemo(() => clients.find((c) => c.id === id), [clients, id]);
   const clientActivity = useMemo(
-    () => (client ? activity.filter((a) => a.who === client.name) : []),
-    [client]
+    () => (client ? events.filter((a) => a.clientId === client.id || a.who === client.name) : []),
+    [client, events]
   );
 
   if (!client) {

@@ -1,11 +1,21 @@
 import { useState, DragEvent } from "react";
 import { stages, type ClientStage } from "@/data/clients";
 import { useClients } from "@/context/ClientsContext";
+import { useActivity, type ActivityType } from "@/context/ActivityContext";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
+const stageToActivityType: Record<ClientStage, ActivityType> = {
+  lead: "lead",
+  viewing: "viewing",
+  negotiating: "negotiation",
+  closing: "closing",
+  closed: "closed",
+};
+
 export const Pipeline = () => {
   const { clients, updateClientStage } = useClients();
+  const { logActivity } = useActivity();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<ClientStage | null>(null);
 
@@ -43,6 +53,12 @@ export const Pipeline = () => {
     if (!client || client.stage === stage) return;
     updateClientStage(id, stage);
     const newStage = stages.find((s) => s.id === stage)!;
+    logActivity({
+      who: client.name,
+      what: `moved to ${newStage.label}`,
+      type: stageToActivityType[stage],
+      clientId: client.id,
+    });
     toast({
       title: "Stage updated",
       description: `${client.name} moved to ${newStage.label}.`,
