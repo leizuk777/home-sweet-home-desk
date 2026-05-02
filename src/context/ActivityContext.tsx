@@ -81,8 +81,14 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   return <ActivityContext.Provider value={value}>{children}</ActivityContext.Provider>;
 };
 
+const fallback: ActivityContextValue = {
+  events: [],
+  logActivity: () => {},
+  clearActivity: () => {},
+};
+
 export const useActivity = () => {
   const ctx = useContext(ActivityContext);
-  if (!ctx) throw new Error("useActivity must be used within ActivityProvider");
-  return ctx;
+  // Fallback prevents crashes during HMR or when consumed outside the provider tree
+  return ctx ?? fallback;
 };
