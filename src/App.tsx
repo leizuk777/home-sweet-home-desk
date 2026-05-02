@@ -7,9 +7,11 @@ import Index from "./pages/Index.tsx";
 import Clients from "./pages/Clients.tsx";
 import ClientDetail from "./pages/ClientDetail.tsx";
 import Listings from "./pages/Listings.tsx";
+import Activity from "./pages/Activity.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { ClientsProvider } from "@/context/ClientsContext";
 import { PropertiesProvider } from "@/context/PropertiesContext";
+import { ActivityProvider } from "@/context/ActivityContext";
 import { AddClientDialog } from "@/components/dashboard/AddClientDialog";
 
 const queryClient = new QueryClient();
@@ -21,17 +23,20 @@ const App = () => (
       <Sonner />
       <ClientsProvider>
         <PropertiesProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/listings" element={<Listings />} />
-              <Route path="/clients/:id" element={<ClientDetail />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-          <AddClientDialog />
+          <ActivityProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/clients" element={<Clients />} />
+                <Route path="/listings" element={<Listings />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/clients/:id" element={<ClientDetail />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+            <AddClientDialog />
+          </ActivityProvider>
         </PropertiesProvider>
       </ClientsProvider>
     </TooltipProvider>

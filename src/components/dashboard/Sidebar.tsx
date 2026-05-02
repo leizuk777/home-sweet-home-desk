@@ -1,18 +1,21 @@
-import { LayoutDashboard, Users, Home, Calendar, MessageSquare, BarChart3, Settings, Building2 } from "lucide-react";
+import { LayoutDashboard, Users, Home, Calendar, MessageSquare, BarChart3, Settings, Building2, Activity } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useProperties } from "@/context/PropertiesContext";
 import { useClients } from "@/context/ClientsContext";
+import { useActivity } from "@/context/ActivityContext";
 import { cn } from "@/lib/utils";
 
 export const Sidebar = () => {
   const location = useLocation();
   const { properties } = useProperties();
   const { clients } = useClients();
+  const { events } = useActivity();
 
   const nav = [
     { icon: LayoutDashboard, label: "Overview", to: "/" },
     { icon: Users, label: "Clients", to: "/clients", badge: String(clients.length) },
     { icon: Home, label: "Listings", to: "/listings", badge: String(properties.length) },
+    { icon: Activity, label: "Activity", to: "/activity", badge: String(events.length) },
     { icon: Calendar, label: "Viewings", to: "#" },
     { icon: MessageSquare, label: "Messages", to: "#", badge: "5" },
     { icon: BarChart3, label: "Analytics", to: "#" },
