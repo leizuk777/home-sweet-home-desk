@@ -1,8 +1,9 @@
-import { LayoutDashboard, Users, Home, Calendar, MessageSquare, BarChart3, Settings, Building2, Activity } from "lucide-react";
+import { LayoutDashboard, Users, Home, Calendar, MessageSquare, BarChart3, Settings, Building2, Activity, ShieldCheck, LogOut } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useProperties } from "@/context/PropertiesContext";
 import { useClients } from "@/context/ClientsContext";
 import { useActivity } from "@/context/ActivityContext";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 export const Sidebar = () => {
@@ -10,6 +11,7 @@ export const Sidebar = () => {
   const { properties } = useProperties();
   const { clients } = useClients();
   const { events } = useActivity();
+  const { user, isAdmin, signOut } = useAuth();
 
   const nav = [
     { icon: LayoutDashboard, label: "Overview", to: "/" },
@@ -19,7 +21,12 @@ export const Sidebar = () => {
     { icon: Calendar, label: "Viewings", to: "#" },
     { icon: MessageSquare, label: "Messages", to: "#", badge: "5" },
     { icon: BarChart3, label: "Analytics", to: "#" },
+    ...(isAdmin ? [{ icon: ShieldCheck, label: "Admin", to: "/admin" }] : []),
   ];
+
+  const meta = (user?.user_metadata ?? {}) as { full_name?: string; name?: string; avatar_url?: string };
+  const displayName = meta.full_name || meta.name || user?.email || "Account";
+  const initials = displayName.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar h-screen sticky top-0">
@@ -70,20 +77,27 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      <div className="p-3 border-t border-sidebar-border">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
-          <Settings className="h-4 w-4" />
-          Settings
-        </button>
-        <div className="mt-3 flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary/50">
-          <div className="h-9 w-9 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground text-xs font-semibold">
-            EV
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm font-medium text-foreground truncate">Elena Vasquez</div>
-            <div className="text-xs text-muted-foreground truncate">Senior Agent</div>
+      <div className="p-3 border-t border-sidebar-border space-y-2">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary/50">
+          {meta.avatar_url ? (
+            <img src={meta.avatar_url} alt="" className="h-9 w-9 rounded-full" />
+          ) : (
+            <div className="h-9 w-9 rounded-full bg-gradient-gold flex items-center justify-center text-primary-foreground text-xs font-semibold">
+              {initials}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-medium text-foreground truncate">{displayName}</div>
+            <div className="text-xs text-muted-foreground truncate">{isAdmin ? "Admin" : "Agent"}</div>
           </div>
         </div>
+        <button
+          onClick={signOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </button>
       </div>
     </aside>
   );
