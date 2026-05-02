@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useClients } from "@/context/ClientsContext";
+import { useActivity } from "@/context/ActivityContext";
 import { useToast } from "@/hooks/use-toast";
 import type { ClientStage, ClientType } from "@/data/clients";
 import { Star } from "lucide-react";
@@ -53,6 +54,7 @@ const empty: FormValues = {
 
 export const AddClientDialog = () => {
   const { isAddOpen, setAddOpen, addClient } = useClients();
+  const { logActivity } = useActivity();
   const { toast } = useToast();
   const [values, setValues] = useState<FormValues>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
@@ -73,7 +75,13 @@ export const AddClientDialog = () => {
       return;
     }
     setErrors({});
-    addClient({ ...values, notes: values.notes ?? "" });
+    const created = addClient({ ...values, notes: values.notes ?? "" });
+    logActivity({
+      who: created.name,
+      what: "was added to the pipeline",
+      type: "lead",
+      clientId: created.id,
+    });
     toast({ title: "Client added", description: `${result.data.name} is now in your pipeline.` });
     setValues(empty);
     setAddOpen(false);
