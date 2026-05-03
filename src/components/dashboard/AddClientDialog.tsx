@@ -75,13 +75,15 @@ export const AddClientDialog = () => {
       return;
     }
     setErrors({});
-    const created = addClient({ ...values, notes: values.notes ?? "" });
-    logActivity({
-      who: created.name,
-      what: "was added to the pipeline",
-      type: "lead",
-      clientId: created.id,
-    });
+    const created = await addClient({ ...values, notes: values.notes ?? "" });
+    if (created) {
+      logActivity({
+        who: created.name,
+        what: "was added to the pipeline",
+        type: "lead",
+        clientId: created.id,
+      });
+    }
     toast({ title: "Client added", description: `${result.data.name} is now in your pipeline.` });
     setValues(empty);
     setAddOpen(false);
