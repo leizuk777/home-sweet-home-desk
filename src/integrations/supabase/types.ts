@@ -14,6 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          property_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          property_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          property_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          avatar: string | null
+          budget: string | null
+          created_at: string
+          email: string | null
+          id: string
+          last_contact: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          stage: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          last_contact?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          stage?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_contact?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          stage?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          address: string
+          baths: number | null
+          beds: number | null
+          city: string | null
+          client_id: string | null
+          created_at: string
+          id: string
+          image: string | null
+          listed_date: string | null
+          price: number | null
+          sqft: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          client_id?: string | null
+          created_at?: string
+          id: string
+          image?: string | null
+          listed_date?: string | null
+          price?: number | null
+          sqft?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          image?: string | null
+          listed_date?: string | null
+          price?: number | null
+          sqft?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_approvals: {
         Row: {
           avatar_url: string | null
