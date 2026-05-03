@@ -83,8 +83,8 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   const addClient: ClientsContextValue["addClient"] = useCallback(async (data) => {
     const id = `C-${String(Date.now()).slice(-4)}`;
     const avatar = data.avatar || initials(data.name);
-    const row = { ...toRow(data as Partial<Client>), id, avatar, last_contact: "Just now" };
-    const { data: inserted, error } = await supabase.from("clients").insert(row).select().single();
+    const row: Record<string, any> = { ...toRow(data as Partial<Client>), id, avatar, last_contact: "Just now" };
+    const { data: inserted, error } = await supabase.from("clients").insert(row as any).select().single();
     if (error || !inserted) return null;
     const newClient = fromRow(inserted);
     setClients((prev) => [newClient, ...prev]);
@@ -104,7 +104,7 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const updateClient = useCallback<ClientsContextValue["updateClient"]>(async (id, patch) => {
-    const row = { ...toRow(patch), last_contact: "Just now" };
+    const row: Record<string, any> = { ...toRow(patch), last_contact: "Just now" };
     if (patch.name && !patch.avatar) row.avatar = initials(patch.name);
     const { error } = await supabase.from("clients").update(row).eq("id", id);
     if (!error) {
