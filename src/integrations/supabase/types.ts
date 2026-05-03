@@ -67,9 +67,12 @@ export type Database = {
           email: string | null
           id: string
           last_contact: string | null
+          location: string | null
           name: string
           notes: string | null
           phone: string | null
+          property: string | null
+          rating: number | null
           source: string | null
           stage: string
           type: string | null
@@ -82,9 +85,12 @@ export type Database = {
           email?: string | null
           id: string
           last_contact?: string | null
+          location?: string | null
           name: string
           notes?: string | null
           phone?: string | null
+          property?: string | null
+          rating?: number | null
           source?: string | null
           stage?: string
           type?: string | null
@@ -97,9 +103,12 @@ export type Database = {
           email?: string | null
           id?: string
           last_contact?: string | null
+          location?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
+          property?: string | null
+          rating?: number | null
           source?: string | null
           stage?: string
           type?: string | null
@@ -121,6 +130,7 @@ export type Database = {
           price: number | null
           sqft: number | null
           status: string
+          type: string | null
           updated_at: string
         }
         Insert: {
@@ -136,6 +146,7 @@ export type Database = {
           price?: number | null
           sqft?: number | null
           status?: string
+          type?: string | null
           updated_at?: string
         }
         Update: {
@@ -151,6 +162,7 @@ export type Database = {
           price?: number | null
           sqft?: number | null
           status?: string
+          type?: string | null
           updated_at?: string
         }
         Relationships: [
