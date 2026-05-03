@@ -62,7 +62,7 @@ export const AddClientDialog = () => {
   const set = <K extends keyof FormValues>(key: K, v: FormValues[K]) =>
     setValues((prev) => ({ ...prev, [key]: v }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = schema.safeParse(values);
     if (!result.success) {
@@ -75,13 +75,15 @@ export const AddClientDialog = () => {
       return;
     }
     setErrors({});
-    const created = addClient({ ...values, notes: values.notes ?? "" });
-    logActivity({
-      who: created.name,
-      what: "was added to the pipeline",
-      type: "lead",
-      clientId: created.id,
-    });
+    const created = await addClient({ ...values, notes: values.notes ?? "" });
+    if (created) {
+      logActivity({
+        who: created.name,
+        what: "was added to the pipeline",
+        type: "lead",
+        clientId: created.id,
+      });
+    }
     toast({ title: "Client added", description: `${result.data.name} is now in your pipeline.` });
     setValues(empty);
     setAddOpen(false);

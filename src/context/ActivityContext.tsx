@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from "react";
-import { activity as seedActivity } from "@/data/clients";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type ActivityType =
   | "lead"
@@ -41,31 +41,72 @@ const formatRelative = (ts: number) => {
   return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
 };
 
-// Seed with timestamps approximated from labels
-const seedWithTimestamps: ActivityItem[] = seedActivity.map((a, i) => ({
-  ...a,
-  id: `seed-${a.id}`,
-  type: a.type as ActivityType,
-  timestamp: Date.now() - (i + 1) * 1000 * 60 * 60 * (i === 4 ? 168 : 5),
-}));
+const fromRow = (r: any): ActivityItem => {
+  const ts = new Date(r.created_at).getTime();
+  return {
+    id: r.id,
+    who: r.title,
+    what: r.description ?? "",
+    when: formatRelative(ts),
+    type: r.type as ActivityType,
+    clientId: r.client_id ?? undefined,
+    timestamp: ts,
+  };
+};
 
 export const ActivityProvider = ({ children }: { children: ReactNode }) => {
-  const [events, setEvents] = useState<ActivityItem[]>(seedWithTimestamps);
+  const [events, setEvents] = useState<ActivityItem[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("activities")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (!cancelled && !error && data) {
+        setEvents(data.map(fromRow));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const logActivity: ActivityContextValue["logActivity"] = useCallback((e) => {
     const ts = Date.now();
-    setEvents((prev) => [
-      {
-        ...e,
-        id: `A-${ts}-${Math.random().toString(36).slice(2, 6)}`,
-        when: "Just now",
-        timestamp: ts,
-      },
-      ...prev,
-    ]);
+    // Optimistic local update
+    const tempId = `tmp-${ts}-${Math.random().toString(36).slice(2, 6)}`;
+    const optimistic: ActivityItem = {
+      ...e,
+      id: tempId,
+      when: "Just now",
+      timestamp: ts,
+    };
+    setEvents((prev) => [optimistic, ...prev]);
+
+    // Persist
+    supabase
+      .from("activities")
+      .insert({
+        type: e.type,
+        title: e.who,
+        description: e.what,
+        client_id: e.clientId ?? null,
+      })
+      .select()
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        setEvents((prev) => prev.map((ev) => (ev.id === tempId ? fromRow(data) : ev)));
+      });
   }, []);
 
-  const clearActivity = useCallback(() => setEvents([]), []);
+  const clearActivity = useCallback(async () => {
+    const { error } = await supabase.from("activities").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (!error) setEvents([]);
+  }, []);
 
   // Recompute "when" labels on read
   const enriched = useMemo(
@@ -89,6 +130,5 @@ const fallback: ActivityContextValue = {
 
 export const useActivity = () => {
   const ctx = useContext(ActivityContext);
-  // Fallback prevents crashes during HMR or when consumed outside the provider tree
   return ctx ?? fallback;
 };
