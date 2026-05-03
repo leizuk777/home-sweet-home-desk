@@ -1,12 +1,14 @@
-import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from "react";
-import { properties as seedProperties, type Property, type PropertyStatus } from "@/data/properties";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { type Property, type PropertyStatus } from "@/data/properties";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PropertiesContextValue {
   properties: Property[];
+  loading: boolean;
   byClient: (clientId: string) => Property[];
-  addProperty: (p: Omit<Property, "id" | "listedDate">) => Property;
-  updateStatus: (id: string, status: PropertyStatus) => void;
-  removeProperty: (id: string) => void;
+  addProperty: (p: Omit<Property, "id" | "listedDate">) => Promise<Property | null>;
+  updateStatus: (id: string, status: PropertyStatus) => Promise<void>;
+  removeProperty: (id: string) => Promise<void>;
 }
 
 const PropertiesContext = createContext<PropertiesContextValue | undefined>(undefined);
@@ -14,25 +16,77 @@ const PropertiesContext = createContext<PropertiesContextValue | undefined>(unde
 const today = () =>
   new Date().toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 
-export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
-  const [properties, setProperties] = useState<Property[]>(seedProperties);
+const fromRow = (r: any): Property => ({
+  id: r.id,
+  clientId: r.client_id ?? "",
+  address: r.address,
+  city: r.city ?? "",
+  type: r.type ?? "",
+  beds: r.beds ?? 0,
+  baths: Number(r.baths ?? 0),
+  sqft: r.sqft ?? 0,
+  price: Number(r.price ?? 0),
+  status: (r.status ?? "active") as PropertyStatus,
+  listedDate: r.listed_date ?? "",
+  image: r.image ?? undefined,
+});
 
-  const addProperty: PropertiesContextValue["addProperty"] = useCallback((data) => {
-    const newProp: Property = {
-      ...data,
-      id: `P-${String(Date.now()).slice(-4)}`,
-      listedDate: today(),
+export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!cancelled) {
+        if (!error && data) setProperties(data.map(fromRow));
+        setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
     };
+  }, []);
+
+  const addProperty: PropertiesContextValue["addProperty"] = useCallback(async (data) => {
+    const id = `P-${String(Date.now()).slice(-4)}`;
+    const row = {
+      id,
+      client_id: data.clientId || null,
+      address: data.address,
+      city: data.city,
+      type: data.type,
+      beds: data.beds,
+      baths: data.baths,
+      sqft: data.sqft,
+      price: data.price,
+      status: data.status,
+      image: data.image ?? null,
+      listed_date: today(),
+    };
+    const { data: inserted, error } = await supabase.from("properties").insert(row).select().single();
+    if (error || !inserted) return null;
+    const newProp = fromRow(inserted);
     setProperties((prev) => [newProp, ...prev]);
     return newProp;
   }, []);
 
-  const updateStatus = useCallback((id: string, status: PropertyStatus) => {
-    setProperties((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+  const updateStatus = useCallback(async (id: string, status: PropertyStatus) => {
+    const { error } = await supabase.from("properties").update({ status }).eq("id", id);
+    if (!error) {
+      setProperties((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+    }
   }, []);
 
-  const removeProperty = useCallback((id: string) => {
-    setProperties((prev) => prev.filter((p) => p.id !== id));
+  const removeProperty = useCallback(async (id: string) => {
+    const { error } = await supabase.from("properties").delete().eq("id", id);
+    if (!error) {
+      setProperties((prev) => prev.filter((p) => p.id !== id));
+    }
   }, []);
 
   const byClient = useCallback(
@@ -41,8 +95,8 @@ export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const value = useMemo(
-    () => ({ properties, byClient, addProperty, updateStatus, removeProperty }),
-    [properties, byClient, addProperty, updateStatus, removeProperty]
+    () => ({ properties, loading, byClient, addProperty, updateStatus, removeProperty }),
+    [properties, loading, byClient, addProperty, updateStatus, removeProperty]
   );
 
   return <PropertiesContext.Provider value={value}>{children}</PropertiesContext.Provider>;
