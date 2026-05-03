@@ -106,7 +106,7 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   const updateClient = useCallback<ClientsContextValue["updateClient"]>(async (id, patch) => {
     const row: Record<string, any> = { ...toRow(patch), last_contact: "Just now" };
     if (patch.name && !patch.avatar) row.avatar = initials(patch.name);
-    const { error } = await supabase.from("clients").update(row).eq("id", id);
+    const { error } = await supabase.from("clients").update(row as any).eq("id", id);
     if (!error) {
       setClients((prev) =>
         prev.map((c) => {
