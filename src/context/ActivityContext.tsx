@@ -124,6 +124,7 @@ const fallback: ActivityContextValue = {
   events: [],
   logActivity: () => {},
   clearActivity: () => {},
+  refresh: async () => {},
 };
 
 export const useActivity = () => {
