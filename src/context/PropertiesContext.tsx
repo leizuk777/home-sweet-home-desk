@@ -9,6 +9,7 @@ interface PropertiesContextValue {
   addProperty: (p: Omit<Property, "id" | "listedDate">) => Promise<Property | null>;
   updateStatus: (id: string, status: PropertyStatus) => Promise<void>;
   removeProperty: (id: string) => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const PropertiesContext = createContext<PropertiesContextValue | undefined>(undefined);
