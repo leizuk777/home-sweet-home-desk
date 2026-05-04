@@ -126,7 +126,9 @@ export type Database = {
           created_at: string
           id: string
           image: string | null
+          last_synced_at: string | null
           listed_date: string | null
+          mls_id: string | null
           price: number | null
           sqft: number | null
           status: string
@@ -142,7 +144,9 @@ export type Database = {
           created_at?: string
           id: string
           image?: string | null
+          last_synced_at?: string | null
           listed_date?: string | null
+          mls_id?: string | null
           price?: number | null
           sqft?: number | null
           status?: string
@@ -158,7 +162,9 @@ export type Database = {
           created_at?: string
           id?: string
           image?: string | null
+          last_synced_at?: string | null
           listed_date?: string | null
+          mls_id?: string | null
           price?: number | null
           sqft?: number | null
           status?: string

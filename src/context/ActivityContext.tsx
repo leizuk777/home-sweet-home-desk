@@ -8,7 +8,8 @@ export type ActivityType =
   | "closing"
   | "closed"
   | "edit"
-  | "note";
+  | "note"
+  | "mls-sync";
 
 export interface ActivityItem {
   id: string;
@@ -24,6 +25,7 @@ interface ActivityContextValue {
   events: ActivityItem[];
   logActivity: (e: Omit<ActivityItem, "id" | "when" | "timestamp">) => void;
   clearActivity: () => void;
+  refresh: () => Promise<void>;
 }
 
 const ActivityContext = createContext<ActivityContextValue | undefined>(undefined);
@@ -57,22 +59,18 @@ const fromRow = (r: any): ActivityItem => {
 export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   const [events, setEvents] = useState<ActivityItem[]>([]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("activities")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-      if (!cancelled && !error && data) {
-        setEvents(data.map(fromRow));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const refresh = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("activities")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (!error && data) setEvents(data.map(fromRow));
   }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const logActivity: ActivityContextValue["logActivity"] = useCallback((e) => {
     const ts = Date.now();
@@ -115,8 +113,8 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const value = useMemo(
-    () => ({ events: enriched, logActivity, clearActivity }),
-    [enriched, logActivity, clearActivity]
+    () => ({ events: enriched, logActivity, clearActivity, refresh }),
+    [enriched, logActivity, clearActivity, refresh]
   );
 
   return <ActivityContext.Provider value={value}>{children}</ActivityContext.Provider>;
@@ -126,6 +124,7 @@ const fallback: ActivityContextValue = {
   events: [],
   logActivity: () => {},
   clearActivity: () => {},
+  refresh: async () => {},
 };
 
 export const useActivity = () => {

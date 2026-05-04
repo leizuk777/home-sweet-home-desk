@@ -11,6 +11,7 @@ import {
   FileSignature,
   Handshake,
   Pencil,
+  RefreshCw,
   Search,
   Sparkles,
   StickyNote,
@@ -26,6 +27,7 @@ const iconMap: Record<ActivityType, any> = {
   closed: CheckCircle2,
   edit: Pencil,
   note: StickyNote,
+  "mls-sync": RefreshCw,
 };
 
 const colorMap: Record<ActivityType, string> = {
@@ -36,6 +38,7 @@ const colorMap: Record<ActivityType, string> = {
   closed: "text-muted-foreground bg-secondary border-border",
   edit: "text-foreground bg-secondary border-border",
   note: "text-gold bg-gold/10 border-gold/30",
+  "mls-sync": "text-info bg-info/10 border-info/20",
 };
 
 const filters: { id: ActivityType | "all"; label: string }[] = [
