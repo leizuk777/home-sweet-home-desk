@@ -8,7 +8,8 @@ export type ActivityType =
   | "closing"
   | "closed"
   | "edit"
-  | "note";
+  | "note"
+  | "mls-sync";
 
 export interface ActivityItem {
   id: string;
