@@ -36,22 +36,21 @@ export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (!cancelled) {
-        if (!error && data) setProperties(data.map(fromRow));
-        setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const refresh = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("properties")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error && data) setProperties(data.map(fromRow));
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      await refresh();
+      setLoading(false);
+    })();
+  }, [refresh]);
+
 
   const addProperty: PropertiesContextValue["addProperty"] = useCallback(async (data) => {
     const id = `P-${String(Date.now()).slice(-4)}`;
@@ -96,8 +95,8 @@ export const PropertiesProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const value = useMemo(
-    () => ({ properties, loading, byClient, addProperty, updateStatus, removeProperty }),
-    [properties, loading, byClient, addProperty, updateStatus, removeProperty]
+    () => ({ properties, loading, byClient, addProperty, updateStatus, removeProperty, refresh }),
+    [properties, loading, byClient, addProperty, updateStatus, removeProperty, refresh]
   );
 
   return <PropertiesContext.Provider value={value}>{children}</PropertiesContext.Provider>;
