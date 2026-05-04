@@ -12,7 +12,11 @@ import {
   MoreVertical,
   ExternalLink,
   Plus,
+  RefreshCw,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useActivity } from "@/context/ActivityContext";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Header } from "@/components/dashboard/Header";
 import { Input } from "@/components/ui/input";
@@ -52,11 +56,36 @@ const formatPrice = (n: number) =>
   n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : `$${(n / 1000).toFixed(0)}K`;
 
 const Listings = () => {
-  const { properties, updateStatus, removeProperty } = useProperties();
+  const { properties, updateStatus, removeProperty, refresh } = useProperties();
   const { clients } = useClients();
+  const { refresh: refreshActivity } = useActivity();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PropertyStatus | "all">("all");
   const [sort, setSort] = useState<"newest" | "price-desc" | "price-asc">("newest");
+  const [syncing, setSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("mls-sync");
+      if (error || !data?.ok) throw error ?? new Error(data?.error ?? "Sync failed");
+      await Promise.all([refresh(), refreshActivity()]);
+      setLastSync(new Date().toLocaleTimeString());
+      toast({
+        title: "MLS synced",
+        description: `${data.added} new · ${data.priceChanges} price · ${data.statusChanges} status updates`,
+      });
+    } catch (e: any) {
+      toast({
+        title: "Sync failed",
+        description: e?.message ?? "Could not reach MLS feed",
+        variant: "destructive",
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const clientById = useMemo(
     () => Object.fromEntries(clients.map((c) => [c.id, c])),
