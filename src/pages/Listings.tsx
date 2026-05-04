@@ -138,6 +138,21 @@ const Listings = () => {
                 Every property linked to your clients, filterable across the entire book.
               </p>
             </div>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                onClick={handleSync}
+                disabled={syncing}
+                className="bg-gradient-gold text-primary-foreground hover:opacity-90"
+              >
+                <RefreshCw className={cn("h-4 w-4 mr-2", syncing && "animate-spin")} />
+                {syncing ? "Syncing MLS…" : "Sync MLS"}
+              </Button>
+              {lastSync && (
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Last sync · {lastSync}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Stat strip */}
