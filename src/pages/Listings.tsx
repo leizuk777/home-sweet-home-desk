@@ -64,6 +64,7 @@ const Listings = () => {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PropertyStatus | "all">("all");
   const [sort, setSort] = useState<"newest" | "price-desc" | "price-asc">("newest");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [syncing, setSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<string | null>(null);
 
