@@ -3,7 +3,7 @@ import { Header } from "@/components/dashboard/Header";
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
 import { Pipeline } from "@/components/dashboard/Pipeline";
 import { ClientsTable } from "@/components/dashboard/ClientsTable";
-import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { ActivityTicker } from "@/components/dashboard/ActivityTicker";
 
 const Index = () => {
   return (
@@ -11,7 +11,7 @@ const Index = () => {
       <Sidebar />
       <div className="flex-1 min-w-0 flex flex-col">
         <Header />
-        <main className="flex-1 px-6 lg:px-10 py-8 space-y-6">
+        <main className="flex-1 px-6 lg:px-10 py-8 pb-20 space-y-6">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-gold mb-2">Dashboard</div>
@@ -26,12 +26,7 @@ const Index = () => {
 
           <StatsGrid />
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2">
-              <Pipeline />
-            </div>
-            <ActivityFeed />
-          </div>
+          <Pipeline />
 
           <ClientsTable />
 
@@ -40,6 +35,7 @@ const Index = () => {
           </footer>
         </main>
       </div>
+      <ActivityTicker />
     </div>
   );
 };
