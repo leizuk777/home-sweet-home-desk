@@ -203,6 +203,36 @@ const Listings = () => {
                 <SelectItem value="price-asc">Price: low → high</SelectItem>
               </SelectContent>
             </Select>
+            <div className="inline-flex rounded-lg border border-border overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setView("grid")}
+                aria-pressed={view === "grid"}
+                title="Grid view"
+                className={cn(
+                  "h-9 w-9 inline-flex items-center justify-center transition-colors",
+                  view === "grid"
+                    ? "bg-gradient-gold text-primary-foreground"
+                    : "bg-background/50 text-muted-foreground hover:text-gold"
+                )}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("list")}
+                aria-pressed={view === "list"}
+                title="List view"
+                className={cn(
+                  "h-9 w-9 inline-flex items-center justify-center border-l border-border transition-colors",
+                  view === "list"
+                    ? "bg-gradient-gold text-primary-foreground"
+                    : "bg-background/50 text-muted-foreground hover:text-gold"
+                )}
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Grid */}
