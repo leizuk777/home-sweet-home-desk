@@ -245,6 +245,118 @@ const Listings = () => {
                 No listings match your filters. Try adjusting search or status.
               </p>
             </div>
+          ) : view === "list" ? (
+            <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
+              <ul className="divide-y divide-border">
+                {filtered.map((p) => {
+                  const owner = clientById[p.clientId];
+                  const meta = propertyStatusMeta[p.status];
+                  return (
+                    <li
+                      key={p.id}
+                      className="px-5 py-3 flex items-center gap-4 hover:bg-secondary/30 transition-colors"
+                    >
+                      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-secondary to-card border border-border flex items-center justify-center shrink-0">
+                        <Building2 className="h-4 w-4 text-gold" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground truncate">
+                            {p.address}
+                          </span>
+                          <span
+                            className={cn(
+                              "inline-flex px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-medium border",
+                              meta.className
+                            )}
+                          >
+                            {meta.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-muted-foreground mt-0.5">
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {p.city}
+                          </span>
+                          <span>{p.type}</span>
+                          <span className="inline-flex items-center gap-1">
+                            <BedDouble className="h-3 w-3" /> {p.beds}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Bath className="h-3 w-3" /> {p.baths}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Ruler className="h-3 w-3" /> {p.sqft.toLocaleString()}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="h-3 w-3" /> {p.listedDate}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="hidden md:flex items-center gap-2 min-w-0 max-w-[180px]">
+                        {owner ? (
+                          <>
+                            <div className="h-7 w-7 rounded-full bg-gradient-gold flex items-center justify-center text-[10px] font-semibold text-primary-foreground shrink-0">
+                              {owner.avatar}
+                            </div>
+                            <Link
+                              to={`/clients/${owner.id}`}
+                              className="text-xs text-foreground truncate hover:text-gold transition-colors"
+                            >
+                              {owner.name}
+                            </Link>
+                          </>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">Unassigned</span>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-mono text-sm text-gold">
+                          {formatPrice(p.price)}
+                        </div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                          {p.id}
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-gold hover:border-gold/40 transition-colors shrink-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                            Set status
+                          </DropdownMenuLabel>
+                          {STATUSES.map((s) => (
+                            <DropdownMenuItem
+                              key={s}
+                              onClick={() => {
+                                updateStatus(p.id, s);
+                                toast({
+                                  title: "Status updated",
+                                  description: `${p.address} → ${propertyStatusMeta[s].label}`,
+                                });
+                              }}
+                              disabled={s === p.status}
+                            >
+                              {propertyStatusMeta[s].label}
+                            </DropdownMenuItem>
+                          ))}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => {
+                              removeProperty(p.id);
+                              toast({ title: "Property removed", description: p.address });
+                            }}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 mr-2" /> Remove
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {filtered.map((p) => {
