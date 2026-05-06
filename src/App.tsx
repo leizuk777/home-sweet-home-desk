@@ -27,16 +27,19 @@ const App = () => (
         <ClientsProvider>
           <PropertiesProvider>
             <ActivityProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/clients" element={<Clients />} />
-                <Route path="/clients/:id" element={<ClientDetail />} />
-                <Route path="/listings" element={<Listings />} />
-                <Route path="/activity" element={<Activity />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <AddClientDialog />
+              <ViewingsProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/clients" element={<Clients />} />
+                  <Route path="/clients/:id" element={<ClientDetail />} />
+                  <Route path="/listings" element={<Listings />} />
+                  <Route path="/viewings" element={<Viewings />} />
+                  <Route path="/activity" element={<Activity />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <AddClientDialog />
+              </ViewingsProvider>
             </ActivityProvider>
           </PropertiesProvider>
         </ClientsProvider>
