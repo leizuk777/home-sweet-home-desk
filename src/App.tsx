@@ -8,10 +8,12 @@ import Clients from "./pages/Clients.tsx";
 import ClientDetail from "./pages/ClientDetail.tsx";
 import Listings from "./pages/Listings.tsx";
 import Activity from "./pages/Activity.tsx";
+import Viewings from "./pages/Viewings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { ClientsProvider } from "@/context/ClientsContext";
 import { PropertiesProvider } from "@/context/PropertiesContext";
 import { ActivityProvider } from "@/context/ActivityContext";
+import { ViewingsProvider } from "@/context/ViewingsContext";
 import { AddClientDialog } from "@/components/dashboard/AddClientDialog";
 
 const queryClient = new QueryClient();
