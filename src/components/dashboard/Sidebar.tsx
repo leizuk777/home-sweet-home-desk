@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useProperties } from "@/context/PropertiesContext";
 import { useClients } from "@/context/ClientsContext";
 import { useActivity } from "@/context/ActivityContext";
+import { useViewings } from "@/context/ViewingsContext";
 import { cn } from "@/lib/utils";
 
 export const Sidebar = () => {
@@ -10,13 +11,15 @@ export const Sidebar = () => {
   const { properties } = useProperties();
   const { clients } = useClients();
   const { events } = useActivity();
+  const { viewings } = useViewings();
+  const upcomingViewings = viewings.filter((v) => v.status === "scheduled" && +new Date(v.scheduledAt) >= Date.now()).length;
 
   const nav = [
     { icon: LayoutDashboard, label: "Overview", to: "/" },
     { icon: Users, label: "Clients", to: "/clients", badge: String(clients.length) },
     { icon: Home, label: "Listings", to: "/listings", badge: String(properties.length) },
     { icon: Activity, label: "Activity", to: "/activity", badge: String(events.length) },
-    { icon: Calendar, label: "Viewings", to: "#" },
+    { icon: Calendar, label: "Viewings", to: "/viewings", badge: String(upcomingViewings) },
     { icon: MessageSquare, label: "Messages", to: "#", badge: "5" },
     { icon: BarChart3, label: "Analytics", to: "#" },
   ];
